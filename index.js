@@ -28,39 +28,48 @@ function formatYear(year) {
 
 // Search for movies by titles.
 module.exports.search = function (terms, done) {
+    var params = {};
+
     // Check search term is specified as a string or an object
     if (typeof terms === 'string') {
-        terms = { s: terms };
+        params.s = terms;
     } else if (typeof terms === 'object' && terms !== null) {
-        if (typeof terms.s !== 'string') {
+        if (typeof terms.terms !== 'string') {
             return done(new Error('search term expected to be a string'));
         }
+
+        params.s = terms.terms;
     } else {
         return done(new Error('`terms` expected to be a string or an object'));
     }
 
     // Make sure search term is not empty
-    terms.s = terms.s.trim();
-    if (!terms.s) {
+    params.s = params.s.trim();
+    if (!params.s) {
         return done(new Error('search term is empty'));
     }
 
-    // Remove type if provided and not within set options
+    // Check type if provided
     var types = ['movie', 'series', 'episode'];
-    if (terms.type && types.indexOf(terms.type) === -1) {
-        return done(new Error('type must be one of movie, series or episode'));
+    if (terms.type) {
+        if (types.indexOf(terms.type) === -1) {
+            var error_msg = 'type must be one of movie, series or episode';
+            return done(new Error(error_msg));
+        }
+
+        params.type = terms.type;
     }
 
-    // Chech year
-    if (terms.y) {
-        terms.y = parseInt(terms.y);
+    // Chech year if provided
+    if (terms.year) {
+        params.y = parseInt(terms.year);
 
-        if (isNaN(terms.y)) {
+        if (isNaN(params.y)) {
             return done(new Error('year must be an integer'));
         }
     }
 
-    needle.request('get', HOST, terms, function (err, res, body) {
+    needle.request('get', HOST, params, function (err, res, body) {
         var movies;
 
         if (err) {

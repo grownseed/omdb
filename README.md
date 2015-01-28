@@ -30,7 +30,7 @@ omdb.search('saw', function(err, movies) {
     // ...
 });
 
-omdb.search({ s: 'saw', y: 2005, type: 'movie' }, function(err, movies) {
+omdb.search({ terms: 'saw', year: 2005, type: 'movie' }, function(err, movies) {
     if(err) {
         return console.error(err);
     }
@@ -75,9 +75,9 @@ terms or an object such as:
 
 ```javascript
 {
-    s: 'search terms',
-    type: 'movie' // optional, one of 'movie', 'series' or 'episode',
-    y: 2003 // optional
+    terms: String,
+    type: 'series' || 'movie' || 'episode' // optional
+    year: Number // optional
 }
 ```
 
